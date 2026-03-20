@@ -46,6 +46,18 @@ You'll see output like:
 npx wrangler deploy
 ```
 
+### 2a. Create metadata indexes for filtering
+
+Vectorize requires explicit metadata indexes on any field used in `$eq` filters. Without these, filtered queries silently return empty results. Run once after creating the index:
+
+```bash
+npx wrangler vectorize create-metadata-index agent-memory --property-name=agent --type=string
+npx wrangler vectorize create-metadata-index agent-memory --property-name=namespace --type=string
+npx wrangler vectorize create-metadata-index agent-memory --property-name=type --type=string
+```
+
+> **Important:** These indexes apply to new upserts only. If you had existing vectors before running these commands, re-upsert them to make them filterable.
+
 Note the deployed URL — something like `https://agent-memory.YOUR-SUBDOMAIN.workers.dev`
 
 ### 3. Set the shared secret
@@ -367,6 +379,8 @@ This is how emergent collaboration happens: Scout-Two notices something on the f
 **Mutation lag.** Upserts take a few seconds to become queryable. In the same session, don't upsert and immediately query the same memory expecting it back.
 
 **No versioning in Vectorize.** Upserts fully replace. If you need history, store dated variants (`heartpunk-2026-03`, `heartpunk-2026-04`) rather than overwriting.
+
+**Metadata filtering requires explicit indexes.** The `agent`, `namespace`, and `type` query filters use Vectorize `$eq` operators, which only work on fields with metadata indexes. Without them, filtered queries silently return empty. See setup step 2a — indexes must be created once per index, and re-upserts are needed for any pre-existing vectors.
 
 **The zero-vector list trick.** `/list` uses a zero vector to approximate "give me everything." Results are ranked by distance from zero, not by recency or relevance. Treat list output as approximate inventory.
 

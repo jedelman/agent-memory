@@ -43,6 +43,11 @@ npx wrangler vectorize create agent-memory --dimensions=768 --metric=cosine
 npx wrangler deploy                   # deploys to memory.jason-edelman.org
 openssl rand -hex 32                  # generate secret, copy it
 npx wrangler secret put MEMORY_SECRET # paste secret
+
+# Required: create metadata indexes so agent/namespace/type filters work
+npx wrangler vectorize create-metadata-index agent-memory --property-name=agent --type=string
+npx wrangler vectorize create-metadata-index agent-memory --property-name=namespace --type=string
+npx wrangler vectorize create-metadata-index agent-memory --property-name=type --type=string
 ```
 
 Store secret locally:
