@@ -1,35 +1,37 @@
 {
-  "name": "agent-memory",
-  "main": "src/index.ts",
-  "compatibility_date": "2026-03-19",
-  "compatibility_flags": ["nodejs_compat"],
-
-  // Custom domain — Worker is the origin, Cloudflare manages DNS + SSL
-  "routes": [
-    {
-      "pattern": "memory.jason-edelman.org",
-      "custom_domain": true
-    }
-  ],
-
-  // Vectorize index binding
-  // Create with: npx wrangler vectorize create agent-memory --dimensions=768 --metric=cosine
-  "vectorize": [
-    {
-      "binding": "MEMORY",
-      "index_name": "agent-memory"
-    }
-  ],
-
-  // Workers AI for embeddings (@cf/baai/bge-base-en-v1.5, 768 dims)
-  "ai": {
-    "binding": "AI"
-  },
-
-  // Secrets (set via: npx wrangler secret put MEMORY_SECRET)
-  // MEMORY_SECRET — shared bearer token for all agents
-
-  "observability": {
-    "enabled": true
-  }
+	"name": "agent-memory",
+	"main": "src/index.ts",
+	"compatibility_date": "2026-03-19",
+	"compatibility_flags": [
+		"nodejs_compat"
+	],
+	// Custom domain — Worker is the origin, Cloudflare manages DNS + SSL
+	"routes": [
+		{
+			"pattern": "memory.jason-edelman.org",
+			"custom_domain": true
+		}
+	],
+	// Vectorize index binding
+	// Create with: npx wrangler vectorize create agent-memory --dimensions=768 --metric=cosine
+	"vectorize": [
+		{
+			"binding": "MEMORY",
+			"index_name": "agent-memory"
+		},
+		{
+			"binding": "VECTORIZE",
+			"index_name": "agent-memory",
+			"remote": true
+		}
+	],
+	// Workers AI for embeddings (@cf/baai/bge-base-en-v1.5, 768 dims)
+	"ai": {
+		"binding": "AI"
+	},
+	// Secrets (set via: npx wrangler secret put MEMORY_SECRET)
+	// MEMORY_SECRET — shared bearer token for all agents
+	"observability": {
+		"enabled": true
+	}
 }
